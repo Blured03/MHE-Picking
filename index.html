@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>MHE Picking - บันทึกสถานะเครื่อง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#1e5aa8; --blue-dark:#123f7a; --green:#16a34a; --green-bg:#e8f8ee;
+    --red:#dc2626; --red-bg:#fdecec; --gray:#6b7280; --line:#e5e7eb; --bg:#f3f4f6;
+    --card:#ffffff; --text:#1f2937;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Sarabun',system-ui,-apple-system,sans-serif;}
+  #app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:90px;}
+  header.topbar{background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:#fff;padding:16px 16px 14px;position:sticky;top:0;z-index:20;}
+  header.topbar h1{font-size:17px;margin:0 0 2px;font-weight:700;}
+  header.topbar .sub{font-size:12.5px;opacity:.9;}
+  nav.tabs{display:flex;background:#fff;position:sticky;top:64px;z-index:19;border-bottom:1px solid var(--line);}
+  nav.tabs button{flex:1;padding:11px 4px;background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--gray);border-bottom:3px solid transparent;}
+  nav.tabs button.active{color:var(--blue);border-bottom-color:var(--blue);}
+  main{padding:14px;}
+  .tabpanel{display:none;}
+  .tabpanel.active{display:block;}
+  .card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .card h2{font-size:15px;margin:0 0 10px;color:var(--blue-dark);display:flex;align-items:center;justify-content:space-between;}
+  .card h2 .count{font-size:12px;font-weight:500;color:var(--gray);background:var(--bg);padding:2px 8px;border-radius:20px;}
+  .unit-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
+  .unit-row:last-child{border-bottom:none;}
+  .unit-row input[type=text]{flex:1;min-width:0;}
+  .unit-row select{width:78px;}
+  input[type=text],input[type=number],select,textarea{
+    font-family:inherit;font-size:14px;padding:8px 9px;border:1px solid #d1d5db;border-radius:8px;background:#fbfbfc;color:var(--text);
+  }
+  textarea{width:100%;resize:vertical;min-height:38px;}
+  .status-btn{border:none;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:13px;font-weight:600;white-space:nowrap;}
+  .status-btn.ready{background:var(--green-bg);color:var(--green);}
+  .status-btn.repair{background:var(--red-bg);color:var(--red);}
+  .del-btn{background:none;border:none;color:var(--gray);font-size:18px;padding:2px 4px;line-height:1;}
+  .remark-row{padding:0 0 8px;margin-top:-4px;}
+  .remark-row input{width:100%;}
+  .add-row{display:flex;gap:8px;margin-top:8px;}
+  .add-row input{flex:1;}
+  .add-row select{width:78px;}
+  .btn{border:none;border-radius:9px;padding:10px 14px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;}
+  .btn-primary{background:var(--blue);color:#fff;width:100%;}
+  .btn-outline{background:#fff;border:1px solid var(--blue);color:var(--blue);}
+  .btn-ghost{background:var(--bg);color:var(--text);}
+  .btn-danger{background:var(--red-bg);color:var(--red);}
+  .agg-row{display:grid;grid-template-columns:1fr 62px 62px 54px;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
+  .agg-row:last-child{border-bottom:none;}
+  .agg-row label{font-size:13.5px;font-weight:500;}
+  .agg-row input{width:100%;text-align:center;}
+  .agg-head{display:grid;grid-template-columns:1fr 62px 62px 54px;gap:6px;font-size:11px;color:var(--gray);padding-bottom:4px;text-align:center;}
+  .agg-head span:first-child{text-align:left;}
+  .ready-badge{font-size:13px;font-weight:700;color:var(--green);text-align:center;}
+  bottom-actions{display:none;}
+  .fixed-save{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;z-index:20;}
+  .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:9px 18px;border-radius:20px;font-size:13.5px;z-index:50;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .toast.show{opacity:1;}
+
+  /* Report */
+  #report-wrap{background:var(--bg);}
+  #report-controls{display:flex;gap:8px;margin-bottom:12px;align-items:center;}
+  #report-controls input[type=date]{flex:1;}
+  #reportCard{background:#fff;border-radius:10px;padding:18px 16px;border:1px solid var(--line);}
+  #reportCard h2{text-align:center;font-size:16px;margin:0 0 2px;color:var(--blue-dark);}
+  #reportCard .rdate{text-align:center;font-size:12.5px;color:var(--gray);margin-bottom:14px;}
+  table.rtable{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:14px;}
+  table.rtable th,table.rtable td{border:1px solid #e2e5ea;padding:5px 4px;text-align:center;}
+  table.rtable th{background:#eef3fb;color:var(--blue-dark);font-weight:600;font-size:11.5px;}
+  table.rtable td:first-child,table.rtable th:first-child{text-align:left;}
+  table.rtable td.remark{text-align:left;font-size:11px;color:var(--red);}
+  table.rtable tr.total td{font-weight:700;background:#f7f8fa;}
+  .rsection-title{font-size:13px;font-weight:700;color:var(--blue-dark);margin:14px 0 6px;border-left:3px solid var(--blue);padding-left:7px;}
+  .chip-grid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+  .chip{font-size:11px;padding:3px 7px;border-radius:6px;font-weight:600;}
+  .chip.ready{background:var(--green-bg);color:var(--green);}
+  .chip.repair{background:var(--red-bg);color:var(--red);}
+  .rnote{font-size:12px;color:var(--text);background:#f9fafb;border-radius:8px;padding:8px 10px;margin-top:6px;white-space:pre-wrap;}
+  .rfooter{text-align:center;font-size:10.5px;color:var(--gray);margin-top:14px;}
+  .empty-hint{text-align:center;color:var(--gray);font-size:13px;padding:30px 10px;}
+
+  /* History */
+  .hist-item{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-item .d{font-weight:600;font-size:14px;}
+  .hist-item .m{font-size:11.5px;color:var(--gray);}
+  .hist-actions{display:flex;gap:6px;}
+  .hist-actions button{font-size:12px;padding:6px 9px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <h1>MHE Picking — บันทึกสถานะเครื่อง</h1>
+    <div class="sub" id="headerDate">-</div>
+  </header>
+  <nav class="tabs">
+    <button data-tab="entry" class="tab active">กรอกข้อมูล</button>
+    <button data-tab="report" class="tab">รายงาน</button>
+    <button data-tab="history" class="tab">ประวัติ</button>
+  </nav>
+
+  <main>
+    <!-- ENTRY TAB -->
+    <section id="tab-entry" class="tabpanel active">
+
+      <div class="card">
+        <h2>Jack ไฟฟ้า <span class="count" id="jackCount">0 คัน</span></h2>
+        <div id="jackList"></div>
+        <div class="add-row">
+          <input type="text" id="jackNewNumber" placeholder="เบอร์เครื่อง เช่น LWE-58">
+          <button class="btn btn-outline" onclick="addUnit('jack')">+ เพิ่ม</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>PE (งาสั้น / งายาว) <span class="count" id="peCount">0 คัน</span></h2>
+        <div id="peList"></div>
+        <div class="add-row">
+          <input type="text" id="peNewNumber" placeholder="เบอร์เครื่อง เช่น LPE-30">
+          <select id="peNewType"><option value="สั้น">งาสั้น</option><option value="ยาว">งายาว</option></select>
+          <button class="btn btn-outline" onclick="addUnit('pe')">+</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>อุปกรณ์อื่นๆ (กรอกจำนวนรวม)</h2>
+        <div class="agg-head"><span>ประเภท</span><span>ทั้งหมด</span><span>ซ่อม</span><span>พร้อมใช้</span></div>
+        <div id="aggList"></div>
+      </div>
+
+      <div class="card">
+        <h2>หมายเหตุรวมประจำวัน</h2>
+        <textarea id="dayNote" placeholder="บันทึกเพิ่มเติม เช่น เครื่องยืมคืน / รอซ่อม / อื่นๆ" oninput="onNoteChange()"></textarea>
+      </div>
+
+      <div class="fixed-save">
+        <button class="btn btn-primary" onclick="saveToday()">💾 บันทึกข้อมูลวันนี้</button>
+      </div>
+    </section>
+
+    <!-- REPORT TAB -->
+    <section id="tab-report" class="tabpanel" id="report-wrap">
+      <div id="report-controls">
+        <input type="date" id="reportDate">
+        <button class="btn btn-ghost" onclick="loadReport()">ดู</button>
+      </div>
+      <div id="reportArea"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;">
+        <button class="btn btn-primary" style="flex:1" onclick="downloadImage()">📷 บันทึกเป็นรูปภาพ</button>
+      </div>
+      <p style="font-size:11.5px;color:var(--gray);text-align:center;margin-top:8px;">
+        กดปุ่มเพื่อบันทึกเป็นรูปภาพส่งต่อได้ทันที หรือแคปหน้าจอกรอบ "รายงาน" ด้านบนได้เลย
+      </p>
+    </section>
+
+    <!-- HISTORY TAB -->
+    <section id="tab-history" class="tabpanel">
+      <div class="card">
+        <h2>ประวัติย้อนหลัง</h2>
+        <div id="historyList"></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* ---------------- Data model & storage ---------------- */
+const LS_HISTORY = 'mhe_picking_history_v1';
+const LS_CURRENT = 'mhe_picking_current_v1';
+
+const AGG_DEFS = [
+  {key:'handpallet', label:'Hand Pallet'},
+  {key:'android', label:'Android'},
+  {key:'rf', label:'RF (PE)'},
+  {key:'dolly', label:'Dolly'}
+];
+
+function seedState(){
+  return {
+    jack: [
+      'LWE-58','LWE-59','LWE-60','LWE-61','LWE-62','LWE-63','LWE-64','LWE-65','LWE-66','LWE-67','LWE-23'
+    ].map(n => ({id:uid(), number:n, status:'ready', remark:''})),
+    pe: [
+      {id:uid(), number:'LPED-26', type:'ยาว', status:'repair', remark:'การ์ดกันตกชำรุด งอผิดรูป'},
+      {id:uid(), number:'LPED-28', type:'ยาว', status:'ready', remark:''},
+      {id:uid(), number:'LPED-29', type:'ยาว', status:'ready', remark:''},
+      {id:uid(), number:'LPE-30', type:'สั้น', status:'ready', remark:''},
+      {id:uid(), number:'LPE-31', type:'สั้น', status:'ready', remark:''},
+      {id:uid(), number:'LPE-35', type:'สั้น', status:'ready', remark:''},
+      {id:uid(), number:'LPE-36', type:'สั้น', status:'ready', remark:''},
+      {id:uid(), number:'LPE-06', type:'สั้น', status:'ready', remark:''},
+      {id:uid(), number:'LPE-09', type:'สั้น', status:'ready', remark:''},
+      {id:uid(), number:'LPE-10', type:'สั้น', status:'ready', remark:''},
+      {id:uid(), number:'LPE-12', type:'สั้น', status:'repair', remark:'อยู่ระหว่างอนุมัติเอกสาร'},
+      {id:uid(), number:'LPE-13', type:'สั้น', status:'ready', remark:''}
+    ],
+    agg: {
+      handpallet: {total:137, repair:8, remark:''},
+      android: {total:155, repair:9, remark:''},
+      rf: {total:10, repair:0, remark:''},
+      dolly: {total:250, repair:0, remark:''}
+    },
+    note: ''
+  };
+}
+
+function uid(){ return 'u' + Math.random().toString(36).slice(2,10); }
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function loadHistory(){
+  try{ return JSON.parse(localStorage.getItem(LS_HISTORY)) || {}; }catch(e){ return {}; }
+}
+function saveHistory(h){ localStorage.setItem(LS_HISTORY, JSON.stringify(h)); }
+
+function loadCurrent(){
+  try{
+    const c = JSON.parse(localStorage.getItem(LS_CURRENT));
+    if(c) return c;
+  }catch(e){}
+  // no draft yet: try most recent history day, else seed
+  const hist = loadHistory();
+  const dates = Object.keys(hist).sort();
+  if(dates.length){
+    return JSON.parse(JSON.stringify(hist[dates[dates.length-1]].state));
+  }
+  return seedState();
+}
+function saveCurrent(){ localStorage.setItem(LS_CURRENT, JSON.stringify(state)); }
+
+let state = loadCurrent();
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    if(btn.dataset.tab === 'report') loadReport();
+    if(btn.dataset.tab === 'history') renderHistory();
+  });
+});
+
+/* ---------------- Entry: units ---------------- */
+function addUnit(kind){
+  if(kind === 'jack'){
+    const input = document.getElementById('jackNewNumber');
+    const val = input.value.trim();
+    if(!val) return;
+    state.jack.push({id:uid(), number:val, status:'ready', remark:''});
+    input.value = '';
+  } else {
+    const input = document.getElementById('peNewNumber');
+    const type = document.getElementById('peNewType').value;
+    const val = input.value.trim();
+    if(!val) return;
+    state.pe.push({id:uid(), number:val, type:type, status:'ready', remark:''});
+    input.value = '';
+  }
+  saveCurrent();
+  renderEntry();
+}
+
+function removeUnit(kind, id){
+  state[kind] = state[kind].filter(u => u.id !== id);
+  saveCurrent();
+  renderEntry();
+}
+
+function toggleStatus(kind, id){
+  const u = state[kind].find(u => u.id === id);
+  u.status = u.status === 'ready' ? 'repair' : 'ready';
+  saveCurrent();
+  renderEntry();
+}
+
+function updateUnitField(kind, id, field, value){
+  const u = state[kind].find(u => u.id === id);
+  u[field] = value;
+  saveCurrent();
+}
+
+function updateUnitType(kind, id, value){
+  const u = state[kind].find(u => u.id === id);
+  u.type = value;
+  saveCurrent();
+}
+
+function renderUnitRow(kind, u){
+  const showRemark = u.status === 'repair';
+  const typeSelect = kind === 'pe'
+    ? `<select onchange="updateUnitType('pe','${u.id}',this.value)">
+        <option value="สั้น" ${u.type==='สั้น'?'selected':''}>สั้น</option>
+        <option value="ยาว" ${u.type==='ยาว'?'selected':''}>ยาว</option>
+       </select>`
+    : '';
+  return `
+    <div>
+      <div class="unit-row">
+        <input type="text" value="${escapeAttr(u.number)}" onchange="updateUnitField('${kind}','${u.id}','number',this.value)">
+        ${typeSelect}
+        <button class="status-btn ${u.status}" onclick="toggleStatus('${kind}','${u.id}')">${u.status==='ready'?'✓ พร้อมใช้':'✕ ซ่อม'}</button>
+        <button class="del-btn" onclick="removeUnit('${kind}','${u.id}')">✕</button>
+      </div>
+      ${showRemark ? `<div class="remark-row"><input type="text" placeholder="หมายเหตุอาการเสีย" value="${escapeAttr(u.remark||'')}" onchange="updateUnitField('${kind}','${u.id}','remark',this.value)"></div>` : ''}
+    </div>`;
+}
+
+function escapeAttr(s){
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function renderEntry(){
+  document.getElementById('jackList').innerHTML = state.jack.map(u=>renderUnitRow('jack',u)).join('') || '<div class="empty-hint">ยังไม่มีเครื่อง เพิ่มเบอร์เครื่องด้านล่าง</div>';
+  document.getElementById('peList').innerHTML = state.pe.map(u=>renderUnitRow('pe',u)).join('') || '<div class="empty-hint">ยังไม่มีเครื่อง เพิ่มเบอร์เครื่องด้านล่าง</div>';
+
+  const jackRepair = state.jack.filter(u=>u.status==='repair').length;
+  document.getElementById('jackCount').textContent = `${state.jack.length} คัน (ซ่อม ${jackRepair})`;
+  const peRepair = state.pe.filter(u=>u.status==='repair').length;
+  document.getElementById('peCount').textContent = `${state.pe.length} คัน (ซ่อม ${peRepair})`;
+
+  document.getElementById('aggList').innerHTML = AGG_DEFS.map(def=>{
+    const a = state.agg[def.key];
+    const ready = Math.max(0, (Number(a.total)||0) - (Number(a.repair)||0));
+    return `
+      <div>
+        <div class="agg-row">
+          <label>${def.label}</label>
+          <input type="number" min="0" value="${a.total}" onchange="updateAgg('${def.key}','total',this.value)">
+          <input type="number" min="0" value="${a.repair}" onchange="updateAgg('${def.key}','repair',this.value)">
+          <div class="ready-badge">${ready}</div>
+        </div>
+        <div class="remark-row"><input type="text" placeholder="หมายเหตุ (เบอร์ที่ชำรุด ฯลฯ)" value="${escapeAttr(a.remark||'')}" onchange="updateAgg('${def.key}','remark',this.value)"></div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('dayNote').value = state.note || '';
+  document.getElementById('headerDate').textContent = formatThaiDate(todayStr()) + ' (วันนี้)';
+}
+
+function updateAgg(key, field, value){
+  if(field === 'total' || field === 'repair'){
+    state.agg[key][field] = Math.max(0, parseInt(value)||0);
+  } else {
+    state.agg[key][field] = value;
+  }
+  saveCurrent();
+  renderEntry();
+}
+
+function onNoteChange(){
+  state.note = document.getElementById('dayNote').value;
+  saveCurrent();
+}
+
+/* ---------------- Save day / history ---------------- */
+function saveToday(){
+  const hist = loadHistory();
+  hist[todayStr()] = { state: JSON.parse(JSON.stringify(state)), savedAt: new Date().toISOString() };
+  saveHistory(hist);
+  showToast('บันทึกข้อมูลวันที่ ' + formatThaiDate(todayStr()) + ' เรียบร้อย');
+  document.querySelector('nav.tabs button[data-tab="report"]').click();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function formatThaiDate(iso){
+  const months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const [y,m,d] = iso.split('-').map(Number);
+  return `${d} ${months[m-1]} ${y+543}`;
+}
+
+/* ---------------- Report ---------------- */
+document.getElementById('reportDate').value = todayStr();
+
+function computeSummary(s){
+  const jackTotal = s.jack.length;
+  const jackRepair = s.jack.filter(u=>u.status==='repair').length;
+  const jackReady = jackTotal - jackRepair;
+
+  const peShort = s.pe.filter(u=>u.type==='สั้น');
+  const peLong = s.pe.filter(u=>u.type==='ยาว');
+  const peShortRepair = peShort.filter(u=>u.status==='repair').length;
+  const peLongRepair = peLong.filter(u=>u.status==='repair').length;
+
+  const rows = [
+    {label:'Jack ไฟฟ้า', total: jackTotal, repair: jackRepair, ready: jackReady,
+      remark: brokenList(s.jack.filter(u=>u.status==='repair'))},
+    {label:'PE งาสั้น', total: peShort.length, repair: peShortRepair, ready: peShort.length-peShortRepair,
+      remark: brokenList(peShort.filter(u=>u.status==='repair'))},
+    {label:'PE งายาว', total: peLong.length, repair: peLongRepair, ready: peLong.length-peLongRepair,
+      remark: brokenList(peLong.filter(u=>u.status==='repair'))},
+  ];
+  AGG_DEFS.forEach(def=>{
+    const a = s.agg[def.key];
+    const total = Number(a.total)||0, repair = Number(a.repair)||0;
+    rows.push({label: def.label, total, repair, ready: total-repair, remark: a.remark||''});
+  });
+
+  const totalAll = rows.reduce((sum,r)=>sum+r.total,0);
+  const readyAll = rows.reduce((sum,r)=>sum+r.ready,0);
+  const repairAll = rows.reduce((sum,r)=>sum+r.repair,0);
+
+  return {rows, totalAll, readyAll, repairAll, jack:s.jack, pe:s.pe, note:s.note};
+}
+
+function brokenList(units){
+  return units.map(u => u.number + (u.remark?(' ('+u.remark+')'):'')).join(', ');
+}
+
+function loadReport(){
+  const dateVal = document.getElementById('reportDate').value || todayStr();
+  let s;
+  if(dateVal === todayStr()){
+    s = state;
+  } else {
+    const hist = loadHistory();
+    s = hist[dateVal] ? hist[dateVal].state : null;
+  }
+  const area = document.getElementById('reportArea');
+  if(!s){
+    area.innerHTML = `<div id="reportCard"><div class="empty-hint">ไม่มีข้อมูลที่บันทึกไว้ในวันที่นี้</div></div>`;
+    return;
+  }
+  const sum = computeSummary(s);
+  area.innerHTML = renderReportHTML(sum, dateVal);
+}
+
+function renderReportHTML(sum, dateVal){
+  const rowsHtml = sum.rows.map(r=>`
+    <tr>
+      <td>${r.label}</td>
+      <td>${r.total}</td>
+      <td>${r.ready}</td>
+      <td>${r.repair}</td>
+      <td class="remark">${r.remark || '-'}</td>
+    </tr>`).join('');
+
+  const jackChips = sum.jack.map(u=>`<span class="chip ${u.status}">${u.number}</span>`).join('');
+  const peShortChips = sum.pe.filter(u=>u.type==='สั้น').map(u=>`<span class="chip ${u.status}">${u.number}</span>`).join('');
+  const peLongChips = sum.pe.filter(u=>u.type==='ยาว').map(u=>`<span class="chip ${u.status}">${u.number}</span>`).join('');
+
+  return `
+  <div id="reportCard">
+    <h2>รายงานสถานะเครื่อง MHE แผนก Picking</h2>
+    <div class="rdate">ข้อมูล ณ วันที่ ${formatThaiDate(dateVal)}</div>
+
+    <table class="rtable">
+      <tr><th>Category</th><th>ทั้งหมด</th><th>พร้อมใช้</th><th>ซ่อม</th><th>เบอร์ที่ชำรุด / หมายเหตุ</th></tr>
+      ${rowsHtml}
+    </table>
+
+    <div class="rsection-title">สถานะรายเบอร์ — Jack ไฟฟ้า</div>
+    <div class="chip-grid">${jackChips || '-'}</div>
+
+    <div class="rsection-title">สถานะรายเบอร์ — PE งาสั้น</div>
+    <div class="chip-grid">${peShortChips || '-'}</div>
+
+    <div class="rsection-title">สถานะรายเบอร์ — PE งายาว</div>
+    <div class="chip-grid">${peLongChips || '-'}</div>
+
+    ${sum.note ? `<div class="rnote">📝 ${escapeHtml(sum.note)}</div>` : ''}
+
+    <div class="rfooter">สร้างโดยระบบบันทึกสถานะเครื่อง MHE Picking</div>
+  </div>`;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function downloadImage(){
+  const node = document.getElementById('reportCard');
+  if(!node){ showToast('ไม่มีรายงานให้บันทึก'); return; }
+  if(typeof html2canvas === 'undefined'){
+    showToast('ไม่สามารถโหลดตัวสร้างรูปภาพได้ (ต้องมีอินเทอร์เน็ต) กรุณาแคปหน้าจอแทน');
+    return;
+  }
+  showToast('กำลังสร้างรูปภาพ...');
+  html2canvas(node, {scale:2, backgroundColor:'#ffffff'}).then(canvas=>{
+    const link = document.createElement('a');
+    const dateVal = document.getElementById('reportDate').value || todayStr();
+    link.download = `MHE-Picking-${dateVal}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('บันทึกรูปภาพแล้ว');
+  }).catch(()=>{
+    showToast('เกิดข้อผิดพลาด กรุณาแคปหน้าจอแทน');
+  });
+}
+
+/* ---------------- History ---------------- */
+function renderHistory(){
+  const hist = loadHistory();
+  const dates = Object.keys(hist).sort().reverse();
+  const list = document.getElementById('historyList');
+  if(!dates.length){
+    list.innerHTML = '<div class="empty-hint">ยังไม่มีประวัติที่บันทึกไว้</div>';
+    return;
+  }
+  list.innerHTML = dates.map(d=>{
+    const sum = computeSummary(hist[d].state);
+    return `
+    <div class="hist-item">
+      <div>
+        <div class="d">${formatThaiDate(d)}</div>
+        <div class="m">พร้อมใช้ ${sum.readyAll} / ซ่อม ${sum.repairAll} จากทั้งหมด ${sum.totalAll}</div>
+      </div>
+      <div class="hist-actions">
+        <button class="btn btn-outline" onclick="viewHistDate('${d}')">ดูรายงาน</button>
+        <button class="btn btn-danger" onclick="deleteHistDate('${d}')">ลบ</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function viewHistDate(d){
+  document.getElementById('reportDate').value = d;
+  document.querySelector('nav.tabs button[data-tab="report"]').click();
+}
+
+function deleteHistDate(d){
+  if(!confirm('ลบข้อมูลวันที่ ' + formatThaiDate(d) + ' ใช่หรือไม่?')) return;
+  const hist = loadHistory();
+  delete hist[d];
+  saveHistory(hist);
+  renderHistory();
+}
+
+/* ---------------- Init ---------------- */
+renderEntry();
+</script>
+</body>
+</html>
