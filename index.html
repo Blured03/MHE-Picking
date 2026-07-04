@@ -17,9 +17,13 @@
   #app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--bg);padding-bottom:90px;}
   header.topbar{background:linear-gradient(135deg,var(--blue),var(--blue-dark));color:#fff;padding:16px 16px 14px;position:sticky;top:0;z-index:20;}
   header.topbar h1{font-size:17px;margin:0 0 2px;font-weight:700;}
-  header.topbar .sub{font-size:12.5px;opacity:.9;}
-  nav.tabs{display:flex;background:#fff;position:sticky;top:64px;z-index:19;border-bottom:1px solid var(--line);}
-  nav.tabs button{flex:1;padding:11px 4px;background:none;border:none;font-family:inherit;font-size:14px;font-weight:600;color:var(--gray);border-bottom:3px solid transparent;}
+  header.topbar .sub{font-size:12.5px;opacity:.9;display:flex;justify-content:space-between;align-items:center;}
+  header.topbar .sync-dot{display:inline-flex;align-items:center;gap:4px;font-size:11px;}
+  header.topbar .sync-dot .dot{width:7px;height:7px;border-radius:50%;background:#9ca3af;}
+  header.topbar .sync-dot.on .dot{background:#4ade80;}
+  header.topbar .sync-dot.off .dot{background:#f87171;}
+  nav.tabs{display:flex;background:#fff;position:sticky;top:64px;z-index:19;border-bottom:1px solid var(--line);overflow-x:auto;}
+  nav.tabs button{flex:1;padding:11px 2px;background:none;border:none;font-family:inherit;font-size:12px;font-weight:600;color:var(--gray);border-bottom:3px solid transparent;white-space:nowrap;}
   nav.tabs button.active{color:var(--blue);border-bottom-color:var(--blue);}
   main{padding:14px;}
   .tabpanel{display:none;}
@@ -30,8 +34,8 @@
   .unit-row{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
   .unit-row:last-child{border-bottom:none;}
   .unit-row input[type=text]{flex:1;min-width:0;}
-  .unit-row select{width:78px;}
-  input[type=text],input[type=number],select,textarea{
+  .unit-row select{width:88px;}
+  input[type=text],input[type=number],input[type=url],select,textarea{
     font-family:inherit;font-size:14px;padding:8px 9px;border:1px solid #d1d5db;border-radius:8px;background:#fbfbfc;color:var(--text);
   }
   textarea{width:100%;resize:vertical;min-height:38px;}
@@ -43,12 +47,13 @@
   .remark-row input{width:100%;}
   .add-row{display:flex;gap:8px;margin-top:8px;}
   .add-row input{flex:1;}
-  .add-row select{width:78px;}
+  .add-row select{width:88px;}
   .btn{border:none;border-radius:9px;padding:10px 14px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;}
   .btn-primary{background:var(--blue);color:#fff;width:100%;}
   .btn-outline{background:#fff;border:1px solid var(--blue);color:var(--blue);}
   .btn-ghost{background:var(--bg);color:var(--text);}
   .btn-danger{background:var(--red-bg);color:var(--red);}
+  .btn-link{background:none;border:none;color:var(--blue);font-size:13px;font-weight:600;padding:6px 0;text-decoration:underline;cursor:pointer;}
   .agg-row{display:grid;grid-template-columns:1fr 62px 62px 54px;gap:6px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);}
   .agg-row:last-child{border-bottom:none;}
   .agg-row label{font-size:13.5px;font-weight:500;}
@@ -56,13 +61,11 @@
   .agg-head{display:grid;grid-template-columns:1fr 62px 62px 54px;gap:6px;font-size:11px;color:var(--gray);padding-bottom:4px;text-align:center;}
   .agg-head span:first-child{text-align:left;}
   .ready-badge{font-size:13px;font-weight:700;color:var(--green);text-align:center;}
-  bottom-actions{display:none;}
   .fixed-save{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:10px 14px calc(10px + env(safe-area-inset-bottom));max-width:520px;margin:0 auto;z-index:20;}
-  .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:9px 18px;border-radius:20px;font-size:13.5px;z-index:50;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:9px 18px;border-radius:20px;font-size:13.5px;z-index:50;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%;text-align:center;}
   .toast.show{opacity:1;}
 
   /* Report */
-  #report-wrap{background:var(--bg);}
   #report-controls{display:flex;gap:8px;margin-bottom:12px;align-items:center;}
   #report-controls input[type=date]{flex:1;}
   #reportCard{background:#fff;border-radius:10px;padding:18px 16px;border:1px solid var(--line);}
@@ -84,53 +87,68 @@
   .empty-hint{text-align:center;color:var(--gray);font-size:13px;padding:30px 10px;}
 
   /* History */
-  .hist-item{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);}
+  .hist-item{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);gap:8px;}
   .hist-item:last-child{border-bottom:none;}
   .hist-item .d{font-weight:600;font-size:14px;}
   .hist-item .m{font-size:11.5px;color:var(--gray);}
-  .hist-actions{display:flex;gap:6px;}
+  .hist-item .m.remote{color:var(--blue);}
+  .hist-actions{display:flex;gap:6px;flex-shrink:0;}
   .hist-actions button{font-size:12px;padding:6px 9px;}
+
+  /* Settings */
+  .settings-status{display:flex;align-items:center;gap:6px;font-size:13px;margin-bottom:10px;padding:8px 10px;border-radius:8px;background:var(--bg);}
+  .settings-status .dot{width:9px;height:9px;border-radius:50%;background:#9ca3af;flex-shrink:0;}
+  .settings-status.on{background:var(--green-bg);color:var(--green);}
+  .settings-status.on .dot{background:var(--green);}
+  .settings-status.off{background:var(--red-bg);color:var(--red);}
+  .settings-status.off .dot{background:var(--red);}
+  .settings-row{display:flex;gap:8px;margin-bottom:8px;}
+  .settings-row input{flex:1;}
+  ol.steps{margin:0;padding-left:20px;font-size:13px;line-height:1.7;}
+  ol.steps li{margin-bottom:6px;}
+  ol.steps code, .card code{background:#eef1f5;padding:1px 5px;border-radius:4px;font-size:12px;}
+  pre.codebox{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;font-size:10.5px;line-height:1.5;overflow-x:auto;white-space:pre;max-height:260px;overflow-y:auto;margin:0 0 8px;}
+
+  /* Categories manage */
+  .cat-row{padding:10px 0;border-bottom:1px solid var(--line);}
+  .cat-row:last-child{border-bottom:none;}
+  .cat-row-top{display:flex;gap:8px;align-items:center;margin-bottom:6px;}
+  .cat-row-top input[type=text]{flex:1;font-weight:600;}
+  .kind-badge{font-size:10.5px;padding:3px 7px;border-radius:6px;background:var(--bg);color:var(--gray);font-weight:600;white-space:nowrap;}
+  .kind-badge.unit{background:#eaf1fb;color:var(--blue);}
+  .cat-row .subtypes-row{display:flex;gap:6px;align-items:center;margin-top:4px;}
+  .cat-row .subtypes-row input{flex:1;}
+  .cat-row .meta{font-size:11px;color:var(--gray);margin-top:4px;}
+  .add-cat-card label{font-size:12px;color:var(--gray);display:block;margin:10px 0 4px;}
+  .add-cat-card label:first-child{margin-top:0;}
+  .kind-select{display:flex;gap:8px;}
+  .kind-select button{flex:1;padding:9px;border-radius:8px;border:1px solid #d1d5db;background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:var(--text);}
+  .kind-select button.sel{border-color:var(--blue);background:#eaf1fb;color:var(--blue);}
 </style>
 </head>
 <body>
 <div id="app">
   <header class="topbar">
     <h1>MHE Picking — บันทึกสถานะเครื่อง</h1>
-    <div class="sub" id="headerDate">-</div>
+    <div class="sub">
+      <span id="headerDate">-</span>
+      <span class="sync-dot" id="syncDot"><span class="dot"></span><span id="syncLabel">ยังไม่เชื่อม Sheets</span></span>
+    </div>
   </header>
   <nav class="tabs">
     <button data-tab="entry" class="tab active">กรอกข้อมูล</button>
     <button data-tab="report" class="tab">รายงาน</button>
     <button data-tab="history" class="tab">ประวัติ</button>
+    <button data-tab="categories" class="tab">หมวดหมู่</button>
+    <button data-tab="settings" class="tab">ตั้งค่า</button>
   </nav>
 
   <main>
     <!-- ENTRY TAB -->
     <section id="tab-entry" class="tabpanel active">
-
+      <div id="categoriesContainer"></div>
       <div class="card">
-        <h2>Jack ไฟฟ้า <span class="count" id="jackCount">0 คัน</span></h2>
-        <div id="jackList"></div>
-        <div class="add-row">
-          <input type="text" id="jackNewNumber" placeholder="เบอร์เครื่อง เช่น LWE-58">
-          <button class="btn btn-outline" onclick="addUnit('jack')">+ เพิ่ม</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>PE (งาสั้น / งายาว) <span class="count" id="peCount">0 คัน</span></h2>
-        <div id="peList"></div>
-        <div class="add-row">
-          <input type="text" id="peNewNumber" placeholder="เบอร์เครื่อง เช่น LPE-30">
-          <select id="peNewType"><option value="สั้น">งาสั้น</option><option value="ยาว">งายาว</option></select>
-          <button class="btn btn-outline" onclick="addUnit('pe')">+</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>อุปกรณ์อื่นๆ (กรอกจำนวนรวม)</h2>
-        <div class="agg-head"><span>ประเภท</span><span>ทั้งหมด</span><span>ซ่อม</span><span>พร้อมใช้</span></div>
-        <div id="aggList"></div>
+        <button class="btn-link" onclick="document.querySelector('nav.tabs button[data-tab=\'categories\']').click()">+ เพิ่ม/แก้ไขหมวดหมู่</button>
       </div>
 
       <div class="card">
@@ -144,7 +162,7 @@
     </section>
 
     <!-- REPORT TAB -->
-    <section id="tab-report" class="tabpanel" id="report-wrap">
+    <section id="tab-report" class="tabpanel">
       <div id="report-controls">
         <input type="date" id="reportDate">
         <button class="btn btn-ghost" onclick="loadReport()">ดู</button>
@@ -165,6 +183,242 @@
         <div id="historyList"></div>
       </div>
     </section>
+
+    <!-- CATEGORIES TAB -->
+    <section id="tab-categories" class="tabpanel">
+      <div class="card">
+        <h2>หมวดหมู่ทั้งหมด</h2>
+        <div id="catList"></div>
+      </div>
+
+      <div class="card add-cat-card">
+        <h2>+ เพิ่มหมวดหมู่ใหม่</h2>
+        <label>ชื่อหมวดหมู่</label>
+        <input type="text" id="newCatName" placeholder="เช่น Reach Truck, Stacker ไฟฟ้า ฯลฯ">
+
+        <label>รูปแบบการกรอกข้อมูล</label>
+        <div class="kind-select">
+          <button type="button" id="kindUnitBtn" class="sel" onclick="setNewCatKind('unit')">รายเบอร์ (ทีละคัน)</button>
+          <button type="button" id="kindAggBtn" onclick="setNewCatKind('aggregate')">จำนวนรวม</button>
+        </div>
+
+        <div id="newCatSubtypesWrap">
+          <label>ชนิดย่อย (ถ้ามี คั่นด้วยจุลภาค เช่น งาสั้น, งายาว) — เว้นว่างได้</label>
+          <input type="text" id="newCatSubtypes" placeholder="ไม่บังคับ">
+        </div>
+
+        <button class="btn btn-primary" style="margin-top:12px" onclick="addCategory()">+ เพิ่มหมวดหมู่</button>
+      </div>
+    </section>
+
+    <!-- SETTINGS TAB -->
+    <section id="tab-settings" class="tabpanel">
+      <div class="card">
+        <h2>เชื่อมต่อ Google Sheets</h2>
+        <div class="settings-status" id="settingsStatus"><span class="dot"></span><span id="settingsStatusText">ยังไม่ได้เชื่อมต่อ — ข้อมูลจะถูกเก็บในเครื่องนี้เท่านั้น</span></div>
+        <div class="settings-row">
+          <input type="url" id="sheetUrlInput" placeholder="วาง URL ของ Web App ที่นี่">
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-outline" style="flex:1" onclick="testConnection()">ทดสอบการเชื่อมต่อ</button>
+          <button class="btn btn-primary" style="flex:1" onclick="saveSheetUrl()">บันทึก URL</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>วิธีตั้งค่า (ทำครั้งเดียว)</h2>
+        <ol class="steps">
+          <li>เปิด Google Sheets สร้างไฟล์ใหม่ 1 ไฟล์ (ตั้งชื่อเช่น "MHE Picking Data")</li>
+          <li>ไปที่เมนู <code>ส่วนขยาย (Extensions) → Apps Script</code></li>
+          <li>ลบโค้ดเดิมทั้งหมด แล้ววางโค้ดจากกล่องด้านล่างแทน</li>
+          <li>กด <code>บันทึก</code> (ไอคอนแผ่นดิสก์) แล้วกด <code>ปรับใช้ (Deploy) → ปรับใช้ใหม่ (New deployment)</code></li>
+          <li>เลือกประเภทเป็น <code>เว็บแอป (Web app)</code> — ตั้งค่า "Execute as" = <code>Me</code> และ "Who has access" = <code>Anyone</code></li>
+          <li>กด <code>ปรับใช้ (Deploy)</code> แล้วอนุญาตสิทธิ์ (Authorize access) ตามที่ระบบขอ</li>
+          <li>คัดลอก URL ของเว็บแอปที่ได้ มาวางในช่องด้านบน แล้วกด "บันทึก URL" และ "ทดสอบการเชื่อมต่อ"</li>
+        </ol>
+        <p style="font-size:11.5px;color:var(--gray);margin-top:8px;">หากแก้โค้ดภายหลัง ต้องไปที่ Deploy → Manage deployments → กดไอคอนดินสอ → เลือก Version เป็น "New version" → Deploy ใหม่ทุกครั้ง</p>
+      </div>
+
+      <div class="card">
+        <h2>โค้ด Google Apps Script</h2>
+        <pre class="codebox" id="gasCode">// วางโค้ดนี้ทั้งหมดแทนที่ Code.gs
+const SUMMARY_SHEET = 'สรุปรายวัน';
+const DETAIL_SHEET  = 'รายละเอียดเครื่อง';
+const NOTE_SHEET    = 'หมายเหตุประจำวัน';
+
+function doPost(e){
+  const data = JSON.parse(e.postData.contents);
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  saveDay(ss, data);
+  return json_({status:'ok'});
+}
+
+function doGet(e){
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const action = (e.parameter.action || 'ping');
+  if(action === 'history') return json_(getAllHistory(ss));
+  if(action === 'day') return json_(getDay(ss, e.parameter.date));
+  return json_({status:'ready'});
+}
+
+function json_(obj){
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function getOrCreateSheet_(ss, name, headers){
+  let sh = ss.getSheetByName(name);
+  if(!sh){ sh = ss.insertSheet(name); sh.appendRow(headers); }
+  return sh;
+}
+
+function fmtDate_(d){
+  if(Object.prototype.toString.call(d) === '[object Date]'){
+    return Utilities.formatDate(d, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  }
+  return String(d);
+}
+
+function removeRowsForDate_(sh, date){
+  const values = sh.getDataRange().getValues();
+  for(let i = values.length - 1; i >= 1; i--){
+    if(fmtDate_(values[i][0]) === date) sh.deleteRow(i + 1);
+  }
+}
+
+function brokenList_(units){
+  return units.filter(u => u.status === 'repair')
+    .map(u => u.number + (u.remark ? ' (' + u.remark + ')' : ''))
+    .join(', ');
+}
+
+function computeSummaryRows_(data){
+  const rows = [];
+  (data.categories || []).forEach(cat => {
+    if(cat.kind === 'unit'){
+      const units = cat.units || [];
+      const subtypes = cat.subtypes || [];
+      if(subtypes.length){
+        subtypes.forEach(st => {
+          const grp = units.filter(u => u.subtype === st);
+          const repair = grp.filter(u => u.status === 'repair').length;
+          rows.push({label: cat.name + ' ' + st, total: grp.length, repair, ready: grp.length - repair, remark: brokenList_(grp)});
+        });
+        const orphans = units.filter(u => subtypes.indexOf(u.subtype) === -1);
+        if(orphans.length){
+          const repair = orphans.filter(u => u.status === 'repair').length;
+          rows.push({label: cat.name + ' อื่นๆ', total: orphans.length, repair, ready: orphans.length - repair, remark: brokenList_(orphans)});
+        }
+      } else {
+        const repair = units.filter(u => u.status === 'repair').length;
+        rows.push({label: cat.name, total: units.length, repair, ready: units.length - repair, remark: brokenList_(units)});
+      }
+    } else {
+      const total = Number(cat.total) || 0, repair = Number(cat.repair) || 0;
+      rows.push({label: cat.name, total, repair, ready: total - repair, remark: cat.remark || ''});
+    }
+  });
+  return rows;
+}
+
+function saveDay(ss, data){
+  const date = data.date;
+
+  const detail = getOrCreateSheet_(ss, DETAIL_SHEET, ['Date','หมวดหมู่','เบอร์','ชนิดย่อย','สถานะ','หมายเหตุ']);
+  removeRowsForDate_(detail, date);
+  (data.categories || []).forEach(cat => {
+    if(cat.kind === 'unit'){
+      (cat.units || []).forEach(u => {
+        detail.appendRow([date, cat.name, u.number, u.subtype || '-', u.status === 'ready' ? 'พร้อมใช้' : 'ซ่อม', u.remark || '']);
+      });
+    }
+  });
+
+  const summary = getOrCreateSheet_(ss, SUMMARY_SHEET, ['Date','Category','ทั้งหมด','พร้อมใช้','ซ่อม','หมายเหตุ']);
+  removeRowsForDate_(summary, date);
+  const rows = computeSummaryRows_(data);
+  rows.forEach(r => summary.appendRow([date, r.label, r.total, r.ready, r.repair, r.remark]));
+  const totals = rows.reduce((a, r) => ({total: a.total + r.total, ready: a.ready + r.ready, repair: a.repair + r.repair}), {total:0, ready:0, repair:0});
+  summary.appendRow([date, 'รวมทั้งหมด', totals.total, totals.ready, totals.repair, '']);
+
+  const noteSh = getOrCreateSheet_(ss, NOTE_SHEET, ['Date','หมายเหตุ','บันทึกเมื่อ']);
+  removeRowsForDate_(noteSh, date);
+  noteSh.appendRow([date, data.note || '', new Date()]);
+}
+
+function getAllHistory(ss){
+  const summary = ss.getSheetByName(SUMMARY_SHEET);
+  if(!summary) return {};
+  const values = summary.getDataRange().getValues();
+  const map = {};
+  for(let i = 1; i < values.length; i++){
+    const [d, category, total, ready, repair] = values[i];
+    const date = fmtDate_(d);
+    if(category === 'รวมทั้งหมด') continue;
+    if(!map[date]) map[date] = {total:0, ready:0, repair:0};
+    map[date].total += Number(total) || 0;
+    map[date].ready += Number(ready) || 0;
+    map[date].repair += Number(repair) || 0;
+  }
+  return map;
+}
+
+function getDay(ss, date){
+  const detail = ss.getSheetByName(DETAIL_SHEET);
+  const summary = ss.getSheetByName(SUMMARY_SHEET);
+  const noteSh = ss.getSheetByName(NOTE_SHEET);
+
+  const unitCatMap = {};
+  if(detail){
+    const values = detail.getDataRange().getValues();
+    for(let i = 1; i < values.length; i++){
+      const row = values[i];
+      if(fmtDate_(row[0]) !== date) continue;
+      const catName = row[1];
+      if(!unitCatMap[catName]) unitCatMap[catName] = {name: catName, kind:'unit', subtypes: [], units: []};
+      const subtype = (row[3] && row[3] !== '-') ? row[3] : '';
+      const status = row[4] === 'พร้อมใช้' ? 'ready' : 'repair';
+      unitCatMap[catName].units.push({id:'u'+i, number: row[2], subtype: subtype, status, remark: row[5] || ''});
+      if(subtype && unitCatMap[catName].subtypes.indexOf(subtype) === -1) unitCatMap[catName].subtypes.push(subtype);
+    }
+  }
+
+  const derivedLabels = {};
+  Object.keys(unitCatMap).forEach(name => {
+    const cat = unitCatMap[name];
+    if(cat.subtypes.length){
+      cat.subtypes.forEach(st => { derivedLabels[name + ' ' + st] = true; });
+      if(cat.units.some(u => cat.subtypes.indexOf(u.subtype) === -1)) derivedLabels[name + ' อื่นๆ'] = true;
+    } else {
+      derivedLabels[name] = true;
+    }
+  });
+
+  const categories = Object.keys(unitCatMap).map(k => unitCatMap[k]);
+
+  if(summary){
+    const values = summary.getDataRange().getValues();
+    for(let i = 1; i < values.length; i++){
+      const row = values[i];
+      if(fmtDate_(row[0]) !== date) continue;
+      const label = row[1];
+      if(label === 'รวมทั้งหมด') continue;
+      if(derivedLabels[label]) continue;
+      categories.push({name: label, kind:'aggregate', total: Number(row[2]) || 0, repair: Number(row[4]) || 0, remark: row[5] || ''});
+    }
+  }
+
+  let note = '';
+  if(noteSh){
+    const values = noteSh.getDataRange().getValues();
+    for(let i = 1; i < values.length; i++){
+      if(fmtDate_(values[i][0]) === date){ note = values[i][1] || ''; break; }
+    }
+  }
+  return {categories, note};
+}</pre>
+        <button class="btn btn-outline" style="width:100%" onclick="copyGasCode()">📋 คัดลอกโค้ด</button>
+      </div>
+    </section>
   </main>
 </div>
 <div class="toast" id="toast"></div>
@@ -172,46 +426,71 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 /* ---------------- Data model & storage ---------------- */
-const LS_HISTORY = 'mhe_picking_history_v1';
-const LS_CURRENT = 'mhe_picking_current_v1';
+const LS_HISTORY = 'mhe_picking_history_v2';
+const LS_CURRENT = 'mhe_picking_current_v2';
+const LS_SHEET_URL = 'mhe_picking_sheet_url_v1';
 
-const AGG_DEFS = [
-  {key:'handpallet', label:'Hand Pallet'},
-  {key:'android', label:'Android'},
-  {key:'rf', label:'RF (PE)'},
-  {key:'dolly', label:'Dolly'}
-];
+function uid(){ return 'u' + Math.random().toString(36).slice(2,10); }
 
 function seedState(){
   return {
-    jack: [
-      'LWE-58','LWE-59','LWE-60','LWE-61','LWE-62','LWE-63','LWE-64','LWE-65','LWE-66','LWE-67','LWE-23'
-    ].map(n => ({id:uid(), number:n, status:'ready', remark:''})),
-    pe: [
-      {id:uid(), number:'LPED-26', type:'ยาว', status:'repair', remark:'การ์ดกันตกชำรุด งอผิดรูป'},
-      {id:uid(), number:'LPED-28', type:'ยาว', status:'ready', remark:''},
-      {id:uid(), number:'LPED-29', type:'ยาว', status:'ready', remark:''},
-      {id:uid(), number:'LPE-30', type:'สั้น', status:'ready', remark:''},
-      {id:uid(), number:'LPE-31', type:'สั้น', status:'ready', remark:''},
-      {id:uid(), number:'LPE-35', type:'สั้น', status:'ready', remark:''},
-      {id:uid(), number:'LPE-36', type:'สั้น', status:'ready', remark:''},
-      {id:uid(), number:'LPE-06', type:'สั้น', status:'ready', remark:''},
-      {id:uid(), number:'LPE-09', type:'สั้น', status:'ready', remark:''},
-      {id:uid(), number:'LPE-10', type:'สั้น', status:'ready', remark:''},
-      {id:uid(), number:'LPE-12', type:'สั้น', status:'repair', remark:'อยู่ระหว่างอนุมัติเอกสาร'},
-      {id:uid(), number:'LPE-13', type:'สั้น', status:'ready', remark:''}
+    categories: [
+      {
+        id: uid(), name: 'Jack ไฟฟ้า', kind: 'unit', subtypes: [],
+        units: ['LWE-58','LWE-59','LWE-60','LWE-61','LWE-62','LWE-63','LWE-64','LWE-65','LWE-66','LWE-67','LWE-23']
+          .map(n => ({id:uid(), number:n, subtype:'', status:'ready', remark:''}))
+      },
+      {
+        id: uid(), name: 'PE', kind: 'unit', subtypes: ['งาสั้น','งายาว'],
+        units: [
+          {id:uid(), number:'LPED-26', subtype:'งายาว', status:'repair', remark:'การ์ดกันตกชำรุด งอผิดรูป'},
+          {id:uid(), number:'LPED-28', subtype:'งายาว', status:'ready', remark:''},
+          {id:uid(), number:'LPED-29', subtype:'งายาว', status:'ready', remark:''},
+          {id:uid(), number:'LPE-30', subtype:'งาสั้น', status:'ready', remark:''},
+          {id:uid(), number:'LPE-31', subtype:'งาสั้น', status:'ready', remark:''},
+          {id:uid(), number:'LPE-35', subtype:'งาสั้น', status:'ready', remark:''},
+          {id:uid(), number:'LPE-36', subtype:'งาสั้น', status:'ready', remark:''},
+          {id:uid(), number:'LPE-06', subtype:'งาสั้น', status:'ready', remark:''},
+          {id:uid(), number:'LPE-09', subtype:'งาสั้น', status:'ready', remark:''},
+          {id:uid(), number:'LPE-10', subtype:'งาสั้น', status:'ready', remark:''},
+          {id:uid(), number:'LPE-12', subtype:'งาสั้น', status:'repair', remark:'อยู่ระหว่างอนุมัติเอกสาร'},
+          {id:uid(), number:'LPE-13', subtype:'งาสั้น', status:'ready', remark:''}
+        ]
+      },
+      {id: uid(), name:'Hand Pallet', kind:'aggregate', total:137, repair:8, remark:''},
+      {id: uid(), name:'Android', kind:'aggregate', total:155, repair:9, remark:''},
+      {id: uid(), name:'RF (PE)', kind:'aggregate', total:10, repair:0, remark:''},
+      {id: uid(), name:'Dolly', kind:'aggregate', total:250, repair:0, remark:''}
     ],
-    agg: {
-      handpallet: {total:137, repair:8, remark:''},
-      android: {total:155, repair:9, remark:''},
-      rf: {total:10, repair:0, remark:''},
-      dolly: {total:250, repair:0, remark:''}
-    },
     note: ''
   };
 }
 
-function uid(){ return 'u' + Math.random().toString(36).slice(2,10); }
+function migrateOldState(old){
+  if(!old) return seedState();
+  if(old.categories) return old;
+  const categories = [];
+  if(old.jack){
+    categories.push({id:uid(), name:'Jack ไฟฟ้า', kind:'unit', subtypes:[],
+      units: old.jack.map(u=>({id:u.id||uid(), number:u.number, subtype:'', status:u.status, remark:u.remark||''}))});
+  }
+  if(old.pe){
+    const units = old.pe.map(u=>{
+      const subtype = u.type === 'สั้น' ? 'งาสั้น' : (u.type === 'ยาว' ? 'งายาว' : (u.type||''));
+      return {id:u.id||uid(), number:u.number, subtype, status:u.status, remark:u.remark||''};
+    });
+    categories.push({id:uid(), name:'PE', kind:'unit', subtypes:['งาสั้น','งายาว'], units});
+  }
+  if(old.agg){
+    const labels = {handpallet:'Hand Pallet', android:'Android', rf:'RF (PE)', dolly:'Dolly'};
+    Object.keys(old.agg).forEach(k=>{
+      const a = old.agg[k];
+      categories.push({id:uid(), name: labels[k]||k, kind:'aggregate', total:Number(a.total)||0, repair:Number(a.repair)||0, remark:a.remark||''});
+    });
+  }
+  if(!categories.length) return seedState();
+  return {categories, note: old.note || ''};
+}
 
 function todayStr(){
   const d = new Date();
@@ -226,17 +505,19 @@ function saveHistory(h){ localStorage.setItem(LS_HISTORY, JSON.stringify(h)); }
 function loadCurrent(){
   try{
     const c = JSON.parse(localStorage.getItem(LS_CURRENT));
-    if(c) return c;
+    if(c) return migrateOldState(c);
   }catch(e){}
-  // no draft yet: try most recent history day, else seed
   const hist = loadHistory();
   const dates = Object.keys(hist).sort();
   if(dates.length){
-    return JSON.parse(JSON.stringify(hist[dates[dates.length-1]].state));
+    return migrateOldState(JSON.parse(JSON.stringify(hist[dates[dates.length-1]].state)));
   }
   return seedState();
 }
 function saveCurrent(){ localStorage.setItem(LS_CURRENT, JSON.stringify(state)); }
+
+function getSheetUrl(){ return localStorage.getItem(LS_SHEET_URL) || ''; }
+function withParam(url, param){ return url + (url.includes('?') ? '&' : '?') + param; }
 
 let state = loadCurrent();
 
@@ -249,114 +530,139 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
     document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
     if(btn.dataset.tab === 'report') loadReport();
     if(btn.dataset.tab === 'history') renderHistory();
+    if(btn.dataset.tab === 'categories') renderCategoriesTab();
   });
 });
 
-/* ---------------- Entry: units ---------------- */
-function addUnit(kind){
-  if(kind === 'jack'){
-    const input = document.getElementById('jackNewNumber');
-    const val = input.value.trim();
-    if(!val) return;
-    state.jack.push({id:uid(), number:val, status:'ready', remark:''});
-    input.value = '';
-  } else {
-    const input = document.getElementById('peNewNumber');
-    const type = document.getElementById('peNewType').value;
-    const val = input.value.trim();
-    if(!val) return;
-    state.pe.push({id:uid(), number:val, type:type, status:'ready', remark:''});
-    input.value = '';
+/* ---------------- Category helpers ---------------- */
+function findCategory(catId){ return state.categories.find(c=>c.id===catId); }
+
+function addUnitToCategory(catId){
+  const cat = findCategory(catId);
+  const numInput = document.getElementById('newNum_'+catId);
+  const number = numInput.value.trim();
+  if(!number) return;
+  let subtype = '';
+  if(cat.subtypes && cat.subtypes.length){
+    const sel = document.getElementById('newSub_'+catId);
+    subtype = sel ? sel.value : '';
   }
+  cat.units.push({id:uid(), number, subtype, status:'ready', remark:''});
+  numInput.value = '';
   saveCurrent();
   renderEntry();
 }
 
-function removeUnit(kind, id){
-  state[kind] = state[kind].filter(u => u.id !== id);
+function removeUnit(catId, unitId){
+  const cat = findCategory(catId);
+  cat.units = cat.units.filter(u=>u.id!==unitId);
   saveCurrent();
   renderEntry();
 }
 
-function toggleStatus(kind, id){
-  const u = state[kind].find(u => u.id === id);
+function toggleUnitStatus(catId, unitId){
+  const cat = findCategory(catId);
+  const u = cat.units.find(u=>u.id===unitId);
   u.status = u.status === 'ready' ? 'repair' : 'ready';
   saveCurrent();
   renderEntry();
 }
 
-function updateUnitField(kind, id, field, value){
-  const u = state[kind].find(u => u.id === id);
+function updateUnitField(catId, unitId, field, value){
+  const cat = findCategory(catId);
+  const u = cat.units.find(u=>u.id===unitId);
   u[field] = value;
   saveCurrent();
 }
 
-function updateUnitType(kind, id, value){
-  const u = state[kind].find(u => u.id === id);
-  u.type = value;
+function updateAggField(catId, field, value){
+  const cat = findCategory(catId);
+  if(field === 'total' || field === 'repair'){
+    cat[field] = Math.max(0, parseInt(value)||0);
+  } else {
+    cat[field] = value;
+  }
   saveCurrent();
-}
-
-function renderUnitRow(kind, u){
-  const showRemark = u.status === 'repair';
-  const typeSelect = kind === 'pe'
-    ? `<select onchange="updateUnitType('pe','${u.id}',this.value)">
-        <option value="สั้น" ${u.type==='สั้น'?'selected':''}>สั้น</option>
-        <option value="ยาว" ${u.type==='ยาว'?'selected':''}>ยาว</option>
-       </select>`
-    : '';
-  return `
-    <div>
-      <div class="unit-row">
-        <input type="text" value="${escapeAttr(u.number)}" onchange="updateUnitField('${kind}','${u.id}','number',this.value)">
-        ${typeSelect}
-        <button class="status-btn ${u.status}" onclick="toggleStatus('${kind}','${u.id}')">${u.status==='ready'?'✓ พร้อมใช้':'✕ ซ่อม'}</button>
-        <button class="del-btn" onclick="removeUnit('${kind}','${u.id}')">✕</button>
-      </div>
-      ${showRemark ? `<div class="remark-row"><input type="text" placeholder="หมายเหตุอาการเสีย" value="${escapeAttr(u.remark||'')}" onchange="updateUnitField('${kind}','${u.id}','remark',this.value)"></div>` : ''}
-    </div>`;
+  renderEntry();
 }
 
 function escapeAttr(s){
   return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 }
 
-function renderEntry(){
-  document.getElementById('jackList').innerHTML = state.jack.map(u=>renderUnitRow('jack',u)).join('') || '<div class="empty-hint">ยังไม่มีเครื่อง เพิ่มเบอร์เครื่องด้านล่าง</div>';
-  document.getElementById('peList').innerHTML = state.pe.map(u=>renderUnitRow('pe',u)).join('') || '<div class="empty-hint">ยังไม่มีเครื่อง เพิ่มเบอร์เครื่องด้านล่าง</div>';
+/* ---------------- Entry rendering ---------------- */
+function renderUnitCard(cat){
+  const hasSub = cat.subtypes && cat.subtypes.length;
+  const repairCount = cat.units.filter(u=>u.status==='repair').length;
+  const rowsHtml = cat.units.map(u=>{
+    const showRemark = u.status === 'repair';
+    const subSelect = hasSub
+      ? `<select onchange="updateUnitField('${cat.id}','${u.id}','subtype',this.value)">
+          ${cat.subtypes.map(st=>`<option value="${escapeAttr(st)}" ${u.subtype===st?'selected':''}>${escapeAttr(st)}</option>`).join('')}
+         </select>`
+      : '';
+    return `
+      <div>
+        <div class="unit-row">
+          <input type="text" value="${escapeAttr(u.number)}" onchange="updateUnitField('${cat.id}','${u.id}','number',this.value)">
+          ${subSelect}
+          <button class="status-btn ${u.status}" onclick="toggleUnitStatus('${cat.id}','${u.id}')">${u.status==='ready'?'✓ พร้อมใช้':'✕ ซ่อม'}</button>
+          <button class="del-btn" onclick="removeUnit('${cat.id}','${u.id}')">✕</button>
+        </div>
+        ${showRemark ? `<div class="remark-row"><input type="text" placeholder="หมายเหตุอาการเสีย" value="${escapeAttr(u.remark||'')}" onchange="updateUnitField('${cat.id}','${u.id}','remark',this.value)"></div>` : ''}
+      </div>`;
+  }).join('') || '<div class="empty-hint">ยังไม่มีเครื่อง เพิ่มเบอร์เครื่องด้านล่าง</div>';
 
-  const jackRepair = state.jack.filter(u=>u.status==='repair').length;
-  document.getElementById('jackCount').textContent = `${state.jack.length} คัน (ซ่อม ${jackRepair})`;
-  const peRepair = state.pe.filter(u=>u.status==='repair').length;
-  document.getElementById('peCount').textContent = `${state.pe.length} คัน (ซ่อม ${peRepair})`;
+  const addSubSelect = hasSub
+    ? `<select id="newSub_${cat.id}">${cat.subtypes.map(st=>`<option value="${escapeAttr(st)}">${escapeAttr(st)}</option>`).join('')}</select>`
+    : '';
 
-  document.getElementById('aggList').innerHTML = AGG_DEFS.map(def=>{
-    const a = state.agg[def.key];
-    const ready = Math.max(0, (Number(a.total)||0) - (Number(a.repair)||0));
+  return `
+    <div class="card">
+      <h2>${escapeAttr(cat.name)} <span class="count">${cat.units.length} คัน (ซ่อม ${repairCount})</span></h2>
+      <div>${rowsHtml}</div>
+      <div class="add-row">
+        <input type="text" id="newNum_${cat.id}" placeholder="เบอร์เครื่องใหม่">
+        ${addSubSelect}
+        <button class="btn btn-outline" onclick="addUnitToCategory('${cat.id}')">+</button>
+      </div>
+    </div>`;
+}
+
+function renderAggCard(aggCats){
+  if(!aggCats.length) return '';
+  const rows = aggCats.map(cat=>{
+    const ready = Math.max(0, (Number(cat.total)||0) - (Number(cat.repair)||0));
     return `
       <div>
         <div class="agg-row">
-          <label>${def.label}</label>
-          <input type="number" min="0" value="${a.total}" onchange="updateAgg('${def.key}','total',this.value)">
-          <input type="number" min="0" value="${a.repair}" onchange="updateAgg('${def.key}','repair',this.value)">
+          <label>${escapeAttr(cat.name)}</label>
+          <input type="number" min="0" value="${cat.total}" onchange="updateAggField('${cat.id}','total',this.value)">
+          <input type="number" min="0" value="${cat.repair}" onchange="updateAggField('${cat.id}','repair',this.value)">
           <div class="ready-badge">${ready}</div>
         </div>
-        <div class="remark-row"><input type="text" placeholder="หมายเหตุ (เบอร์ที่ชำรุด ฯลฯ)" value="${escapeAttr(a.remark||'')}" onchange="updateAgg('${def.key}','remark',this.value)"></div>
+        <div class="remark-row"><input type="text" placeholder="หมายเหตุ (เบอร์ที่ชำรุด ฯลฯ)" value="${escapeAttr(cat.remark||'')}" onchange="updateAggField('${cat.id}','remark',this.value)"></div>
       </div>`;
   }).join('');
-
-  document.getElementById('dayNote').value = state.note || '';
-  document.getElementById('headerDate').textContent = formatThaiDate(todayStr()) + ' (วันนี้)';
+  return `
+    <div class="card">
+      <h2>อุปกรณ์อื่นๆ (กรอกจำนวนรวม)</h2>
+      <div class="agg-head"><span>ประเภท</span><span>ทั้งหมด</span><span>ซ่อม</span><span>พร้อมใช้</span></div>
+      ${rows}
+    </div>`;
 }
 
-function updateAgg(key, field, value){
-  if(field === 'total' || field === 'repair'){
-    state.agg[key][field] = Math.max(0, parseInt(value)||0);
-  } else {
-    state.agg[key][field] = value;
+function renderEntry(){
+  const unitCats = state.categories.filter(c=>c.kind==='unit');
+  const aggCats = state.categories.filter(c=>c.kind==='aggregate');
+  let html = unitCats.map(renderUnitCard).join('');
+  html += renderAggCard(aggCats);
+  if(!state.categories.length){
+    html = '<div class="card"><div class="empty-hint">ยังไม่มีหมวดหมู่ ไปที่แท็บ "หมวดหมู่" เพื่อเพิ่ม</div></div>';
   }
-  saveCurrent();
-  renderEntry();
+  document.getElementById('categoriesContainer').innerHTML = html;
+  document.getElementById('dayNote').value = state.note || '';
+  document.getElementById('headerDate').textContent = formatThaiDate(todayStr()) + ' (วันนี้)';
 }
 
 function onNoteChange(){
@@ -365,11 +671,27 @@ function onNoteChange(){
 }
 
 /* ---------------- Save day / history ---------------- */
-function saveToday(){
+async function saveToday(){
   const hist = loadHistory();
   hist[todayStr()] = { state: JSON.parse(JSON.stringify(state)), savedAt: new Date().toISOString() };
   saveHistory(hist);
-  showToast('บันทึกข้อมูลวันที่ ' + formatThaiDate(todayStr()) + ' เรียบร้อย');
+
+  const url = getSheetUrl();
+  if(url){
+    showToast('กำลังบันทึกขึ้น Google Sheets...');
+    try{
+      await fetch(url, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain;charset=utf-8'},
+        body: JSON.stringify({date: todayStr(), categories: state.categories, note: state.note})
+      });
+      showToast('บันทึกสำเร็จ ✅ (ในเครื่อง + Google Sheets)');
+    }catch(e){
+      showToast('บันทึกในเครื่องแล้ว แต่ส่งขึ้น Sheets ไม่สำเร็จ ตรวจสอบอินเทอร์เน็ต/URL');
+    }
+  } else {
+    showToast('บันทึกข้อมูลวันที่ ' + formatThaiDate(todayStr()) + ' เรียบร้อย (ในเครื่องนี้เท่านั้น)');
+  }
   document.querySelector('nav.tabs button[data-tab="report"]').click();
 }
 
@@ -377,7 +699,7 @@ function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 2200);
+  setTimeout(()=>t.classList.remove('show'), 2400);
 }
 
 function formatThaiDate(iso){
@@ -389,51 +711,76 @@ function formatThaiDate(iso){
 /* ---------------- Report ---------------- */
 document.getElementById('reportDate').value = todayStr();
 
-function computeSummary(s){
-  const jackTotal = s.jack.length;
-  const jackRepair = s.jack.filter(u=>u.status==='repair').length;
-  const jackReady = jackTotal - jackRepair;
+function brokenList(units){
+  return units.filter(u=>u.status==='repair').map(u => u.number + (u.remark?(' ('+u.remark+')'):'')).join(', ');
+}
 
-  const peShort = s.pe.filter(u=>u.type==='สั้น');
-  const peLong = s.pe.filter(u=>u.type==='ยาว');
-  const peShortRepair = peShort.filter(u=>u.status==='repair').length;
-  const peLongRepair = peLong.filter(u=>u.status==='repair').length;
+function computeSummary(rawState){
+  const s = rawState.categories ? rawState : migrateOldState(rawState);
+  const rows = [];
+  const unitGroups = []; // for chip rendering: {label, chips:[{number,status}]}
 
-  const rows = [
-    {label:'Jack ไฟฟ้า', total: jackTotal, repair: jackRepair, ready: jackReady,
-      remark: brokenList(s.jack.filter(u=>u.status==='repair'))},
-    {label:'PE งาสั้น', total: peShort.length, repair: peShortRepair, ready: peShort.length-peShortRepair,
-      remark: brokenList(peShort.filter(u=>u.status==='repair'))},
-    {label:'PE งายาว', total: peLong.length, repair: peLongRepair, ready: peLong.length-peLongRepair,
-      remark: brokenList(peLong.filter(u=>u.status==='repair'))},
-  ];
-  AGG_DEFS.forEach(def=>{
-    const a = s.agg[def.key];
-    const total = Number(a.total)||0, repair = Number(a.repair)||0;
-    rows.push({label: def.label, total, repair, ready: total-repair, remark: a.remark||''});
+  (s.categories || []).forEach(cat=>{
+    if(cat.kind === 'unit'){
+      const units = cat.units || [];
+      const subtypes = cat.subtypes || [];
+      if(subtypes.length){
+        subtypes.forEach(st=>{
+          const grp = units.filter(u=>u.subtype===st);
+          const repair = grp.filter(u=>u.status==='repair').length;
+          rows.push({label: cat.name+' '+st, total: grp.length, repair, ready: grp.length-repair, remark: brokenList(grp)});
+          unitGroups.push({label: cat.name+' '+st, units: grp});
+        });
+        const orphans = units.filter(u=>subtypes.indexOf(u.subtype)===-1);
+        if(orphans.length){
+          const repair = orphans.filter(u=>u.status==='repair').length;
+          rows.push({label: cat.name+' อื่นๆ', total: orphans.length, repair, ready: orphans.length-repair, remark: brokenList(orphans)});
+          unitGroups.push({label: cat.name+' อื่นๆ', units: orphans});
+        }
+      } else {
+        const repair = units.filter(u=>u.status==='repair').length;
+        rows.push({label: cat.name, total: units.length, repair, ready: units.length-repair, remark: brokenList(units)});
+        unitGroups.push({label: cat.name, units});
+      }
+    } else {
+      const total = Number(cat.total)||0, repair = Number(cat.repair)||0;
+      rows.push({label: cat.name, total, repair, ready: total-repair, remark: cat.remark||''});
+    }
   });
 
   const totalAll = rows.reduce((sum,r)=>sum+r.total,0);
   const readyAll = rows.reduce((sum,r)=>sum+r.ready,0);
   const repairAll = rows.reduce((sum,r)=>sum+r.repair,0);
 
-  return {rows, totalAll, readyAll, repairAll, jack:s.jack, pe:s.pe, note:s.note};
+  return {rows, totalAll, readyAll, repairAll, unitGroups, note: s.note};
 }
 
-function brokenList(units){
-  return units.map(u => u.number + (u.remark?(' ('+u.remark+')'):'')).join(', ');
-}
-
-function loadReport(){
+async function loadReport(){
   const dateVal = document.getElementById('reportDate').value || todayStr();
-  let s;
+  const area = document.getElementById('reportArea');
+  let s = null;
+
   if(dateVal === todayStr()){
     s = state;
   } else {
     const hist = loadHistory();
-    s = hist[dateVal] ? hist[dateVal].state : null;
+    if(hist[dateVal]) s = migrateOldState(hist[dateVal].state);
   }
-  const area = document.getElementById('reportArea');
+
+  if(!s){
+    const url = getSheetUrl();
+    if(url){
+      area.innerHTML = '<div id="reportCard"><div class="empty-hint">กำลังโหลดจาก Google Sheets...</div></div>';
+      try{
+        const res = await fetch(withParam(url, 'action=day&date=' + dateVal));
+        const remote = await res.json();
+        if(remote && remote.categories && remote.categories.length){
+          s = {categories: remote.categories, note: remote.note || ''};
+        }
+      }catch(e){ /* fall through to empty state */ }
+    }
+  }
+
   if(!s){
     area.innerHTML = `<div id="reportCard"><div class="empty-hint">ไม่มีข้อมูลที่บันทึกไว้ในวันที่นี้</div></div>`;
     return;
@@ -445,16 +792,17 @@ function loadReport(){
 function renderReportHTML(sum, dateVal){
   const rowsHtml = sum.rows.map(r=>`
     <tr>
-      <td>${r.label}</td>
+      <td>${escapeHtml(r.label)}</td>
       <td>${r.total}</td>
       <td>${r.ready}</td>
       <td>${r.repair}</td>
-      <td class="remark">${r.remark || '-'}</td>
+      <td class="remark">${r.remark ? escapeHtml(r.remark) : '-'}</td>
     </tr>`).join('');
 
-  const jackChips = sum.jack.map(u=>`<span class="chip ${u.status}">${u.number}</span>`).join('');
-  const peShortChips = sum.pe.filter(u=>u.type==='สั้น').map(u=>`<span class="chip ${u.status}">${u.number}</span>`).join('');
-  const peLongChips = sum.pe.filter(u=>u.type==='ยาว').map(u=>`<span class="chip ${u.status}">${u.number}</span>`).join('');
+  const chipSections = sum.unitGroups.map(g=>{
+    const chips = g.units.map(u=>`<span class="chip ${u.status}">${escapeHtml(u.number)}</span>`).join('') || '-';
+    return `<div class="rsection-title">สถานะรายเบอร์ — ${escapeHtml(g.label)}</div><div class="chip-grid">${chips}</div>`;
+  }).join('');
 
   return `
   <div id="reportCard">
@@ -464,16 +812,10 @@ function renderReportHTML(sum, dateVal){
     <table class="rtable">
       <tr><th>Category</th><th>ทั้งหมด</th><th>พร้อมใช้</th><th>ซ่อม</th><th>เบอร์ที่ชำรุด / หมายเหตุ</th></tr>
       ${rowsHtml}
+      <tr class="total"><td>รวมทั้งหมด</td><td>${sum.totalAll}</td><td>${sum.readyAll}</td><td>${sum.repairAll}</td><td></td></tr>
     </table>
 
-    <div class="rsection-title">สถานะรายเบอร์ — Jack ไฟฟ้า</div>
-    <div class="chip-grid">${jackChips || '-'}</div>
-
-    <div class="rsection-title">สถานะรายเบอร์ — PE งาสั้น</div>
-    <div class="chip-grid">${peShortChips || '-'}</div>
-
-    <div class="rsection-title">สถานะรายเบอร์ — PE งายาว</div>
-    <div class="chip-grid">${peLongChips || '-'}</div>
+    ${chipSections}
 
     ${sum.note ? `<div class="rnote">📝 ${escapeHtml(sum.note)}</div>` : ''}
 
@@ -506,25 +848,44 @@ function downloadImage(){
 }
 
 /* ---------------- History ---------------- */
-function renderHistory(){
-  const hist = loadHistory();
-  const dates = Object.keys(hist).sort().reverse();
+async function renderHistory(){
+  const local = loadHistory();
   const list = document.getElementById('historyList');
+  list.innerHTML = '<div class="empty-hint">กำลังโหลด...</div>';
+
+  const combined = {};
+  Object.keys(local).forEach(d=>{
+    const sum = computeSummary(local[d].state);
+    combined[d] = {total: sum.totalAll, ready: sum.readyAll, repair: sum.repairAll, remote:false};
+  });
+
+  const url = getSheetUrl();
+  if(url){
+    try{
+      const res = await fetch(withParam(url, 'action=history'));
+      const remote = await res.json();
+      Object.keys(remote || {}).forEach(d=>{
+        if(!combined[d]) combined[d] = {...remote[d], remote:true};
+      });
+    }catch(e){ /* ignore, use local only */ }
+  }
+
+  const dates = Object.keys(combined).sort().reverse();
   if(!dates.length){
     list.innerHTML = '<div class="empty-hint">ยังไม่มีประวัติที่บันทึกไว้</div>';
     return;
   }
   list.innerHTML = dates.map(d=>{
-    const sum = computeSummary(hist[d].state);
+    const c = combined[d];
     return `
     <div class="hist-item">
       <div>
         <div class="d">${formatThaiDate(d)}</div>
-        <div class="m">พร้อมใช้ ${sum.readyAll} / ซ่อม ${sum.repairAll} จากทั้งหมด ${sum.totalAll}</div>
+        <div class="m ${c.remote?'remote':''}">พร้อมใช้ ${c.ready} / ซ่อม ${c.repair} จากทั้งหมด ${c.total}${c.remote?' · จาก Sheets':''}</div>
       </div>
       <div class="hist-actions">
         <button class="btn btn-outline" onclick="viewHistDate('${d}')">ดูรายงาน</button>
-        <button class="btn btn-danger" onclick="deleteHistDate('${d}')">ลบ</button>
+        ${local[d] ? `<button class="btn btn-danger" onclick="deleteHistDate('${d}')">ลบ</button>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -536,14 +897,148 @@ function viewHistDate(d){
 }
 
 function deleteHistDate(d){
-  if(!confirm('ลบข้อมูลวันที่ ' + formatThaiDate(d) + ' ใช่หรือไม่?')) return;
+  if(!confirm('ลบข้อมูลวันที่ ' + formatThaiDate(d) + ' ในเครื่องนี้ ใช่หรือไม่? (ข้อมูลใน Google Sheets จะไม่ถูกลบ)')) return;
   const hist = loadHistory();
   delete hist[d];
   saveHistory(hist);
   renderHistory();
 }
 
+/* ---------------- Categories tab ---------------- */
+let newCatKind = 'unit';
+function setNewCatKind(kind){
+  newCatKind = kind;
+  document.getElementById('kindUnitBtn').classList.toggle('sel', kind==='unit');
+  document.getElementById('kindAggBtn').classList.toggle('sel', kind==='aggregate');
+  document.getElementById('newCatSubtypesWrap').style.display = kind==='unit' ? 'block' : 'none';
+}
+
+function renderCategoriesTab(){
+  const list = document.getElementById('catList');
+  if(!state.categories.length){
+    list.innerHTML = '<div class="empty-hint">ยังไม่มีหมวดหมู่ เพิ่มด้านล่างได้เลย</div>';
+    return;
+  }
+  list.innerHTML = state.categories.map(cat=>{
+    const isUnit = cat.kind === 'unit';
+    const meta = isUnit ? `${cat.units.length} คัน` : `จำนวนรวม ${cat.total||0}`;
+    return `
+    <div class="cat-row">
+      <div class="cat-row-top">
+        <input type="text" value="${escapeAttr(cat.name)}" onchange="renameCategory('${cat.id}',this.value)">
+        <span class="kind-badge ${isUnit?'unit':''}">${isUnit?'รายเบอร์':'จำนวนรวม'}</span>
+        <button class="del-btn" onclick="deleteCategory('${cat.id}')">✕</button>
+      </div>
+      ${isUnit ? `<div class="subtypes-row">
+        <input type="text" placeholder="ชนิดย่อย เช่น งาสั้น, งายาว (เว้นว่างได้)" value="${escapeAttr((cat.subtypes||[]).join(', '))}" onchange="updateCategorySubtypes('${cat.id}',this.value)">
+      </div>` : ''}
+      <div class="meta">${meta}</div>
+    </div>`;
+  }).join('');
+}
+
+function renameCategory(catId, name){
+  const cat = findCategory(catId);
+  cat.name = name.trim() || cat.name;
+  saveCurrent();
+  renderEntry();
+  renderCategoriesTab();
+}
+
+function updateCategorySubtypes(catId, csv){
+  const cat = findCategory(catId);
+  cat.subtypes = csv.split(',').map(s=>s.trim()).filter(Boolean);
+  saveCurrent();
+  renderEntry();
+  renderCategoriesTab();
+}
+
+function deleteCategory(catId){
+  const cat = findCategory(catId);
+  const msg = cat.kind === 'unit'
+    ? `ลบหมวดหมู่ "${cat.name}" และเครื่องทั้งหมด ${cat.units.length} คันในหมวดนี้ (เฉพาะข้อมูลวันนี้ที่ยังไม่บันทึก) ใช่หรือไม่?`
+    : `ลบหมวดหมู่ "${cat.name}" ใช่หรือไม่?`;
+  if(!confirm(msg)) return;
+  state.categories = state.categories.filter(c=>c.id!==catId);
+  saveCurrent();
+  renderEntry();
+  renderCategoriesTab();
+}
+
+function addCategory(){
+  const nameInput = document.getElementById('newCatName');
+  const name = nameInput.value.trim();
+  if(!name){ showToast('กรุณาใส่ชื่อหมวดหมู่'); return; }
+  const subtypesRaw = document.getElementById('newCatSubtypes').value;
+  const subtypes = subtypesRaw.split(',').map(s=>s.trim()).filter(Boolean);
+  const cat = newCatKind === 'unit'
+    ? {id:uid(), name, kind:'unit', subtypes, units:[]}
+    : {id:uid(), name, kind:'aggregate', total:0, repair:0, remark:''};
+  state.categories.push(cat);
+  saveCurrent();
+  nameInput.value = '';
+  document.getElementById('newCatSubtypes').value = '';
+  showToast('เพิ่มหมวดหมู่ "' + name + '" แล้ว');
+  renderEntry();
+  renderCategoriesTab();
+}
+
+/* ---------------- Settings / Google Sheets sync ---------------- */
+function updateSyncStatus(){
+  const url = getSheetUrl();
+  const dot = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
+  const status = document.getElementById('settingsStatus');
+  const statusText = document.getElementById('settingsStatusText');
+  if(url){
+    dot.className = 'sync-dot on';
+    label.textContent = 'เชื่อม Sheets แล้ว';
+    status.className = 'settings-status on';
+    statusText.textContent = 'เชื่อมต่อ Google Sheets แล้ว — ข้อมูลจะถูกส่งขึ้น Sheets ทุกครั้งที่บันทึก';
+  } else {
+    dot.className = 'sync-dot off';
+    label.textContent = 'ยังไม่เชื่อม Sheets';
+    status.className = 'settings-status off';
+    statusText.textContent = 'ยังไม่ได้เชื่อมต่อ — ข้อมูลจะถูกเก็บในเครื่องนี้เท่านั้น';
+  }
+}
+
+function saveSheetUrl(){
+  const v = document.getElementById('sheetUrlInput').value.trim();
+  localStorage.setItem(LS_SHEET_URL, v);
+  updateSyncStatus();
+  showToast(v ? 'บันทึก URL แล้ว' : 'ล้าง URL แล้ว (กลับไปเก็บในเครื่องเท่านั้น)');
+}
+
+async function testConnection(){
+  const url = document.getElementById('sheetUrlInput').value.trim();
+  if(!url){ showToast('กรุณาใส่ URL ก่อน'); return; }
+  showToast('กำลังทดสอบการเชื่อมต่อ...');
+  try{
+    const res = await fetch(withParam(url, 'action=ping'));
+    const j = await res.json();
+    if(j && j.status){
+      showToast('เชื่อมต่อสำเร็จ ✅');
+    } else {
+      showToast('เชื่อมต่อได้ แต่รูปแบบคำตอบไม่ถูกต้อง ตรวจสอบโค้ด Apps Script');
+    }
+  }catch(e){
+    showToast('เชื่อมต่อไม่สำเร็จ ตรวจสอบ URL และการตั้งค่า Deploy (Anyone / Me)');
+  }
+}
+
+function copyGasCode(){
+  const text = document.getElementById('gasCode').textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(()=>showToast('คัดลอกโค้ดแล้ว')).catch(()=>showToast('คัดลอกไม่สำเร็จ กรุณาเลือกข้อความเอง'));
+  } else {
+    showToast('เบราว์เซอร์นี้ไม่รองรับการคัดลอกอัตโนมัติ กรุณาเลือกข้อความเอง');
+  }
+}
+
 /* ---------------- Init ---------------- */
+document.getElementById('sheetUrlInput').value = getSheetUrl();
+updateSyncStatus();
 renderEntry();
 </script>
 </body>
