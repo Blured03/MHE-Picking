@@ -518,6 +518,19 @@ function getSheetUrl(){ return localStorage.getItem(LS_SHEET_URL) || DEFAULT_SHE
 function withParam(url, param){ return url + (url.includes('?') ? '&' : '?') + param; }
 
 async function loadCurrent(){
+  // ทุกครั้งที่เปิดแอป ลองดึงข้อมูลล่าสุดจาก Google Sheets มาใช้ก่อนเสมอ (ให้ทุกเครื่องเห็นตรงกัน)
+  const url = getSheetUrl();
+  if(url){
+    try{
+      const res = await fetch(withParam(url, 'action=latest'));
+      const remote = await res.json();
+      if(remote && remote.categories && remote.categories.length){
+        const note = (remote.date === todayStr()) ? (remote.note || '') : '';
+        return {categories: remote.categories, note};
+      }
+    }catch(e){ /* เชื่อมไม่ได้ ใช้ข้อมูลในเครื่องแทน */ }
+  }
+  // ดึงจาก Sheets ไม่ได้ (ออฟไลน์ หรือยังไม่เชื่อม) - ใช้ข้อมูลที่มีอยู่ในเครื่องแทน
   try{
     const c = JSON.parse(localStorage.getItem(LS_CURRENT));
     if(c) return migrateOldState(c);
@@ -526,17 +539,6 @@ async function loadCurrent(){
   const dates = Object.keys(hist).sort();
   if(dates.length){
     return migrateOldState(JSON.parse(JSON.stringify(hist[dates[dates.length-1]].state)));
-  }
-  // เครื่องใหม่ ไม่มีข้อมูลในเครื่องเลย - ลองดึงข้อมูลล่าสุดจาก Google Sheets มาใช้เป็นฐาน
-  const url = getSheetUrl();
-  if(url){
-    try{
-      const res = await fetch(withParam(url, 'action=latest'));
-      const remote = await res.json();
-      if(remote && remote.categories && remote.categories.length){
-        return {categories: remote.categories, note: ''};
-      }
-    }catch(e){ /* เชื่อมไม่ได้ ใช้ค่าเริ่มต้นแทน */ }
   }
   return seedState();
 }
