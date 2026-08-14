@@ -258,7 +258,18 @@ function doGet(e){
   const action = (e.parameter.action || 'ping');
   if(action === 'history') return json_(getAllHistory(ss));
   if(action === 'day') return json_(getDay(ss, e.parameter.date));
+  if(action === 'latest') return json_(getLatest(ss));
   return json_({status:'ready'});
+}
+
+function getLatest(ss){
+  const map = getAllHistory(ss);
+  const dates = Object.keys(map).sort();
+  if(!dates.length) return {};
+  const latestDate = dates[dates.length - 1];
+  const day = getDay(ss, latestDate);
+  day.date = latestDate;
+  return day;
 }
 
 function json_(obj){
@@ -502,7 +513,11 @@ function loadHistory(){
 }
 function saveHistory(h){ localStorage.setItem(LS_HISTORY, JSON.stringify(h)); }
 
-function loadCurrent(){
+const DEFAULT_SHEET_URL = 'https://script.google.com/macros/s/AKfycbypIPfyzsSoHEl6vhnu8rGf0nHIkLzFw0Iqv1PxWLP8c1jMgiQcIdWrKPzphluTLeGX/exec';
+function getSheetUrl(){ return localStorage.getItem(LS_SHEET_URL) || DEFAULT_SHEET_URL; }
+function withParam(url, param){ return url + (url.includes('?') ? '&' : '?') + param; }
+
+async function loadCurrent(){
   try{
     const c = JSON.parse(localStorage.getItem(LS_CURRENT));
     if(c) return migrateOldState(c);
@@ -512,15 +527,22 @@ function loadCurrent(){
   if(dates.length){
     return migrateOldState(JSON.parse(JSON.stringify(hist[dates[dates.length-1]].state)));
   }
+  // เครื่องใหม่ ไม่มีข้อมูลในเครื่องเลย - ลองดึงข้อมูลล่าสุดจาก Google Sheets มาใช้เป็นฐาน
+  const url = getSheetUrl();
+  if(url){
+    try{
+      const res = await fetch(withParam(url, 'action=latest'));
+      const remote = await res.json();
+      if(remote && remote.categories && remote.categories.length){
+        return {categories: remote.categories, note: ''};
+      }
+    }catch(e){ /* เชื่อมไม่ได้ ใช้ค่าเริ่มต้นแทน */ }
+  }
   return seedState();
 }
 function saveCurrent(){ localStorage.setItem(LS_CURRENT, JSON.stringify(state)); }
 
-const DEFAULT_SHEET_URL = 'https://script.google.com/macros/s/AKfycbypIPfyzsSoHEl6vhnu8rGf0nHIkLzFw0Iqv1PxWLP8c1jMgiQcIdWrKPzphluTLeGX/exec';
-function getSheetUrl(){ return localStorage.getItem(LS_SHEET_URL) || DEFAULT_SHEET_URL; }
-function withParam(url, param){ return url + (url.includes('?') ? '&' : '?') + param; }
-
-let state = loadCurrent();
+let state = seedState();
 
 /* ---------------- Tabs ---------------- */
 document.querySelectorAll('nav.tabs button').forEach(btn=>{
@@ -1038,9 +1060,14 @@ function copyGasCode(){
 }
 
 /* ---------------- Init ---------------- */
-document.getElementById('sheetUrlInput').value = getSheetUrl();
-updateSyncStatus();
-renderEntry();
+async function initApp(){
+  document.getElementById('sheetUrlInput').value = getSheetUrl();
+  updateSyncStatus();
+  document.getElementById('categoriesContainer').innerHTML = '<div class="card"><div class="empty-hint">กำลังโหลดข้อมูล...</div></div>';
+  state = await loadCurrent();
+  renderEntry();
+}
+initApp();
 </script>
 </body>
 </html>
