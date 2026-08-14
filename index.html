@@ -516,7 +516,8 @@ function loadCurrent(){
 }
 function saveCurrent(){ localStorage.setItem(LS_CURRENT, JSON.stringify(state)); }
 
-function getSheetUrl(){ return localStorage.getItem(LS_SHEET_URL) || ''; }
+const DEFAULT_SHEET_URL = 'https://script.google.com/macros/s/AKfycbypIPfyzsSoHEl6vhnu8rGf0nHIkLzFw0Iqv1PxWLP8c1jMgiQcIdWrKPzphluTLeGX/exec';
+function getSheetUrl(){ return localStorage.getItem(LS_SHEET_URL) || DEFAULT_SHEET_URL; }
 function withParam(url, param){ return url + (url.includes('?') ? '&' : '?') + param; }
 
 let state = loadCurrent();
