@@ -517,6 +517,15 @@ const DEFAULT_SHEET_URL = 'https://script.google.com/macros/s/AKfycbypIPfyzsSoHE
 function getSheetUrl(){ return localStorage.getItem(LS_SHEET_URL) || DEFAULT_SHEET_URL; }
 function withParam(url, param){ return url + (url.includes('?') ? '&' : '?') + param; }
 
+function ensureCategoryIds(categories){
+  // ข้อมูลที่สร้างใหม่จาก Google Sheets ไม่มี id ต่อหมวดหมู่ ทำให้ปุ่มลบ/แก้ไข/สลับสถานะกดไม่ติด - เติม id ให้ที่นี่
+  return (categories || []).map(cat => ({
+    ...cat,
+    id: cat.id || uid(),
+    units: cat.kind === 'unit' ? (cat.units || []).map(u => ({...u, id: u.id || uid()})) : cat.units
+  }));
+}
+
 async function loadCurrent(){
   // ทุกครั้งที่เปิดแอป ลองดึงข้อมูลล่าสุดจาก Google Sheets มาใช้ก่อนเสมอ (ให้ทุกเครื่องเห็นตรงกัน)
   const url = getSheetUrl();
@@ -526,7 +535,7 @@ async function loadCurrent(){
       const remote = await res.json();
       if(remote && remote.categories && remote.categories.length){
         const note = (remote.date === todayStr()) ? (remote.note || '') : '';
-        return {categories: remote.categories, note};
+        return {categories: ensureCategoryIds(remote.categories), note};
       }
     }catch(e){ /* เชื่อมไม่ได้ ใช้ข้อมูลในเครื่องแทน */ }
   }
